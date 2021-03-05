@@ -3,7 +3,7 @@
 require_once('common/conn.php');
 
 
-$useremail = "ali@ali.com.pk";
+$useremail = $_POST['useremail'];
 $property_type = $_POST['property-type'];
 $property_status = $_POST['property-status'];
 $price = $_POST['price'];

@@ -17,6 +17,12 @@
     <!-- PAGE LEVEL STYLES-->
 </head>
 
+<?php
+session_start();
+if (isset($_SESSION["user_exist"])){ 
+?>
+
+
 <body class="fixed-navbar">
     <div class="page-wrapper">
         <!-- START HEADER-->
@@ -410,16 +416,6 @@
                         $country = $row['country'];
                         $status = $row['status'];
 
-                        // $getImages = "SELECT * FROM property_images WHERE property_id = '".$id."'";
-                        // $images = mysqli_query($con, $getImages);
-                        // if(mysqli_num_rows($images) > 0)
-                        // {
-                        //     while($row = mysqli_fetch_array($images))
-                        //     {
-                        //         $image = $row['image'];
-                        //     }
-                        // }
-
             ?>
                 <div class="ibox invoice">
                     <div class="invoice-header">
@@ -441,8 +437,26 @@
                                             <span class="font-strong">Area Size:</span> <?=$area_size?>
                                         </li>
                                         <li>
-                                            <span class="font-strong">Size Type:</span> <?=$city?>
+                                            <span class="font-strong">Location:</span> <?=$city?>
                                         </li>
+                                        <br><br><br><br><br><br>
+                                        <li>
+                                        <?php
+                                            if($status == '0'){
+                                                $status = 'Waiting for approval';
+                                        ?>
+                                                <span class="font-strong">Status: </span> <span class="btn btn-warning"> <?=$status?> </span>
+                                        <?php
+                                            } else {
+                                                $status = 'Approved';
+                                        ?>
+                                                <span class="font-strong">Status: </span> <span class="btn btn-success"> <?=$status?> </span>
+                                        <?php
+                                            }
+                                        ?>
+                                            
+                                        </li>
+                                        <hr>
                                     </ul>
                                 </div>
                             </div>
@@ -483,32 +497,30 @@
                                             <span class="font-strong">Country:</span> <?=$country?>
                                         </li>
                                 </div>
-                                <div class="row">
-                                
-                            <?php 
-                                $getImages = "SELECT * FROM property_images WHERE property_id = '".$id."'";
-                                $images = mysqli_query($con, $getImages);
-                                if(mysqli_num_rows($images) > 0)
-                                {
-                                    while($row = mysqli_fetch_array($images))
-                                    {
-                            ?>
-                                <div class="col-lg-3">
-                                <img src="../img/<?=$row['image'];?>">        
-                                </div>
-                                
-                            <?php 
-                                }
-                                    }
-                            ?>
-                        
-                                    
-
-                                </div>
                                 <div class="text-right mt-4">
-                                    <button class="btn btn-danger" type="button" onclick=""><i class="fas fa-trash-alt mr-2"></i> Bin List</button>
+                                    <button class="btn btn-danger" type="button" onclick="delProperty(<?=$id?>)"><i class="fas fa-trash-alt mr-2"></i> Bin List</button>
                                 </div>
                             </div>
+                            <div class="row mt-4">
+                                    <?php 
+                                        $getImages = "SELECT * FROM property_images WHERE property_id = '".$id."'";
+                                        $images = mysqli_query($con, $getImages);
+                                        if(mysqli_num_rows($images) > 0)
+                                        {
+                                            while($row = mysqli_fetch_array($images))
+                                            {
+                                    ?>
+                                        <div class="col-lg-3">
+                                            <a href="../img/<?=$row['image'];?>">
+                                                <img src="../img/<?=$row['image'];?>">
+                                            </a>
+                                        </div>
+                                        
+                                    <?php 
+                                        }
+                                            }
+                                    ?>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -688,6 +700,48 @@
     <!-- CORE SCRIPTS-->
     <script src="assets/js/app.min.js" type="text/javascript"></script>
     <!-- PAGE LEVEL SCRIPTS-->
+
+<script>
+    function delProperty(id) {
+        // alert(id);
+        event.preventDefault();
+            var propert_id = id;
+            if (propert_id != '') {
+                $.ajax({
+                    type: 'POST',
+                    url: 'deleteProperty.php',
+                    data: {
+                        'propert_id': propert_id
+                    },
+                    success: function(ajax_responce) {
+                        if ($.trim(ajax_responce) == 'deleted') {
+                            location.reload(true);
+                            alert("deleted");
+                        }
+                        if ($.trim(ajax_responce) == 'property not deleted') {
+                            alert("property not deleted");
+                        }
+                        if ($.trim(ajax_responce) == 'Images not deleted') {
+                            alert("Images not deleted");
+                        }
+                    }
+                });
+            } else {
+                return false;
+            }
+    }
+</script>
+
+
+<?php
+    }
+    else {
+        header("Location: ../login.php");
+    }
+?>
+
+
+
 </body>
 
 </html>
