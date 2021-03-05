@@ -1,4 +1,4 @@
-<?php
+?php
 require_once('common/conn.php');
 require('common/enc-dec-password.php');
 session_start();
